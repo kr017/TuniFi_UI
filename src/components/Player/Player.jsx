@@ -1,8 +1,13 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { useState } from "react";
+
+import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+import FilledFavoriteIcon from "@material-ui/icons/Favorite";
+
 // import ReactPlayer from "react-player";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
+import { useSongs } from "../../context";
 
 const useStyles = makeStyles(theme => ({
   playerContainer: {
@@ -10,15 +15,32 @@ const useStyles = makeStyles(theme => ({
     alignItems: "center",
   },
   root: {
-    // borderTop: "1px solid",
+    borderTop: `1px solid ${theme.palette.border}`,
 
     boxShadow: `0px 3px 1px -2px #d3c4c4, 0px 2px 2px 0px ${theme.palette.background.default},
      0px 1px 5px 0px #0000001f`,
+    "& .player": {
+      display: "flex",
+      maxHeight: "100px",
+      backgroundColor: `${theme.palette.background.default}`,
+    },
+    "& .details": {
+      padding: "10px",
+      maxWidth: "400px",
+      display: "inline-flex",
+      alignItems: "center",
+    },
+    "& .title": {
+      padding: "20px",
+      fontSize: "16px",
+      textTransform: "capitalize",
+    },
     "& .rhap_container": {
       backgroundColor: `${theme.palette.background.default}`,
       display: "flex",
       justifyItems: "center",
       padding: "15px 10px 10px 10px",
+      boxShadow: "none",
     },
     "& .rhap_time": {
       color: theme.palette.primary.contrastText,
@@ -48,43 +70,58 @@ const useStyles = makeStyles(theme => ({
 export const Player = () => {
   const classes = useStyles();
   const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
-
-  const playlist = [
-    {
-      name: "枝芽",
-      src: "https://res.cloudinary.com/dq0qx65vj/video/upload/v1633539985/tunifi/SoorajKiBahoonMein.mp3",
-    },
-    {
-      name: "自由女神",
-      src: "https://res.cloudinary.com/dq0qx65vj/video/upload/v1633539981/tunifi/jaisaMeraTu.mp3",
-    },
-    {
-      name: "无雨无晴",
-      src: "https://res.cloudinary.com/dq0qx65vj/video/upload/v1633539774/tunifi/afeemii.mp3",
-    },
-  ];
-
+  const { songsState, songsDispatch } = useSongs();
+  console.log(songsState?.currentSong);
   const handleClickPrevious = () => {
     setCurrentMusicIndex(prevState => {
-      return prevState === 0 ? playlist.length - 1 : prevState - 1;
+      return prevState === 0
+        ? songsState?.currentList.length - 1
+        : prevState - 1;
+    });
+    songsDispatch({
+      type: "SET_CURRENT_SONG",
+      payload: songsState?.currentList[currentMusicIndex],
     });
   };
 
   const handleClickNext = () => {
     setCurrentMusicIndex(prevState =>
-      prevState < playlist.length - 1 ? prevState + 1 : 0
+      prevState < songsState?.currentList.length - 1 ? prevState + 1 : 0
     );
+    songsDispatch({
+      type: "SET_CURRENT_SONG",
+      payload: songsState?.currentList[currentMusicIndex],
+    });
   };
   return (
     <div className={classes.root}>
       <div className="player">
+        <div className="details">
+          <img
+            src={songsState?.currentSong?.image}
+            style={{ height: "100%" }}
+          />
+          <span className="title">{songsState?.currentSong?.title}</span>
+          <span style={{ cursor: "pointer" }} onClick={handleLikeClick}>
+            {true ? (
+              <FilledFavoriteIcon htmlColor="#1db954" />
+            ) : (
+              <FavoriteBorderIcon />
+            )}
+          </span>
+        </div>
         <AudioPlayer
           autoPlayAfterSrcChange={true}
           showSkipControls={true}
           showJumpControls={false}
-          src={playlist[currentMusicIndex].src}
+          src={songsState?.currentSong?.src}
           onClickPrevious={handleClickPrevious}
           onClickNext={handleClickNext}
+          loop={false}
+          autoPlay={false}
+          muted={true}
+          onEnded={handleClickNext}
+          customAdditionalControls={[]}
         />
       </div>
     </div>

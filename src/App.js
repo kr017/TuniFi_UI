@@ -14,6 +14,8 @@ function App() {
         <Route path="/signup" component={SignUp} exact />
 
         <PrivateRoutes path="/" component={Dashboard} exact />
+        <PrivateRoutes path="/search" component={Dashboard} exact />
+        <PrivateRoutes path="/lib" component={Dashboard} exact />
       </Switch>
     </BrowserRouter>
   );

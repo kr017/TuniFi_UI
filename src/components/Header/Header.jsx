@@ -21,6 +21,7 @@ import { useLogin, useSongs } from "../../context";
 import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import { useRouteMatch } from "react-router";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: 0,
@@ -96,7 +97,7 @@ export function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openMenu, setOpenMenu] = useState(false);
   const { userState, userDispatch } = useLogin();
-
+  const showSearch = useRouteMatch("/search");
   const { songsDispatch } = useSongs();
 
   function handleUserChoice(key) {
@@ -143,32 +144,36 @@ export function Header() {
     <div className={classes.root}>
       {/* <AppBar position="fixed" className={classes.appBarCss}> */}
       <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-        <span
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            marginRight: "4px",
-          }}
-        >
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
+        <span>
+          {showSearch && (
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                marginRight: "4px",
               }}
-              inputProps={{ "aria-label": "search" }}
-              onKeyPress={e => {
-                handleSearch(e);
-              }}
-              onChange={e => {
-                handleSearch(e);
-              }}
-            />
-          </div>
+            >
+              <div className={classes.search}>
+                <div className={classes.searchIcon}>
+                  <SearchIcon />
+                </div>
+                <InputBase
+                  placeholder="Search…"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ "aria-label": "search" }}
+                  onKeyPress={e => {
+                    handleSearch(e);
+                  }}
+                  onChange={e => {
+                    handleSearch(e);
+                  }}
+                />
+              </div>
+            </span>
+          )}
         </span>
         <span
           style={{

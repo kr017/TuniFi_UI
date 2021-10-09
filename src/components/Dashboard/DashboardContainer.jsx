@@ -5,6 +5,7 @@ import { Grid } from "@material-ui/core";
 const useStyles = makeStyles(theme => ({
   root: {
     overflowY: "auto",
+    overflowX: "hidden",
     height: "80vh",
   },
 }));

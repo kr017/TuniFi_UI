@@ -7,6 +7,9 @@ const songsReducer = (state, action) => {
     case "SET_SONGS":
       return { ...state, songs: action?.payload };
 
+    case "SET_CURRENT_PLAYLIST": {
+      return { ...state, currentList: action?.payload };
+    }
     case "UPDATE_PLATLISTS": {
       return { ...state, playlists: action?.payload };
     }
@@ -22,6 +25,7 @@ const initalState = {
   songs: [],
   likedSongs: [],
   playlists: [],
+  currentList: [],
 };
 
 export const SongsProvider = ({ children }) => {

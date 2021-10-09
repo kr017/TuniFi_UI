@@ -20,6 +20,7 @@ export function Dashboard() {
   useEffect(() => {
     getAllSongs().then(res => {
       songsDispatch({ type: "SET_SONGS", payload: res.data.data });
+      songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: res.data.data });
     });
   }, []);
   return (

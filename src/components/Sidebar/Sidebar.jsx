@@ -11,6 +11,7 @@ import logo from "../../logo.png";
 import WbIncandescentOutlinedIcon from "@material-ui/icons/WbIncandescentOutlined";
 import { useLogin, useSongs } from "../../context";
 import { setStorage } from "../../utils/Theme/utilities.js/storageUtil";
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -96,6 +97,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Sidebar() {
   const classes = useStyles();
+  const history = useHistory();
 
   const { userState, userDispatch } = useLogin();
   // eslint-disable-next-line
@@ -116,6 +118,13 @@ export default function Sidebar() {
   ]);
 
   const handleSidebarClick = key => {
+    if (key === "Home") {
+      history.push("/");
+    } else if (key === "Search") {
+      history.push("/search");
+    } else if (key === "Your Library") {
+      history.push("/lib");
+    }
     // if (key === "Archive") {
     //   getAllNotes({ isArchieved: true })
     //     .then(function (res) {

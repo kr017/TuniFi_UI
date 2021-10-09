@@ -26,7 +26,7 @@ const light = {
     brown: "#E6C9A8",
     gray: "#E8EAED",
 
-    hover: "#feefc3",
+    hover: "#4ba51e1a", // "#feefc3",
     transparent: "#ece9e9",
 
     outline: "#e0e0e0",

@@ -1,12 +1,14 @@
 import { makeStyles } from "@material-ui/core/styles";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import { useSongs } from "../../context";
+import { isPresent } from "../../utils/utils";
 const useStyles = makeStyles(theme => ({
   root: {
     // padding: "12px",
     position: "relative",
     borderRadius: "10px",
     display: "flex",
-    backgroundColor: "#ffffff1a",
+    backgroundColor: theme.palette.hover, //"#ffffff1a",
     cursor: "pointer",
     width: "30vw",
     "& .imgContainer": {
@@ -53,7 +55,22 @@ const useStyles = makeStyles(theme => ({
 
 export const SongTile = props => {
   const { details } = props;
+  const { songsState, songsDispatch } = useSongs();
   const classes = useStyles();
+
+  const handlePlayClick = details => {
+    if (!isPresent(songsState?.currentList, details._id)) {
+      let arr = [];
+      arr.push(details);
+      songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: arr });
+    } else {
+      songsDispatch({
+        type: "SET_CURRENT_SONG",
+        payload: details,
+      });
+    }
+    // if(songsState?.currentList.)
+  };
   return (
     <div className={classes.root}>
       <div className="imgContainer">
@@ -61,7 +78,7 @@ export const SongTile = props => {
       </div>
       <div className="innerGrid">
         <span className="title">{details.title}</span>
-        <div className="player">
+        <div className="player" onClick={() => handlePlayClick(details)}>
           <PlayArrowIcon />
         </div>
       </div>
