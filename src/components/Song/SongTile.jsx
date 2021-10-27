@@ -1,3 +1,5 @@
+import { useHistory, useParams } from "react-router-dom";
+
 import { makeStyles } from "@material-ui/core/styles";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import { useSongs } from "../../context";
@@ -51,10 +53,31 @@ const useStyles = makeStyles(theme => ({
       textTransform: "capitalize",
     },
   },
+
+  horz_root: {
+    position: "relative",
+    borderRadius: "10px",
+    display: "flex",
+    backgroundColor: theme.palette.hover, //"#ffffff1a",
+    cursor: "pointer",
+    width: "80vw",
+
+    "& .horz_imgContainer": {
+      height: "50px",
+      width: "50px",
+    },
+
+    "& .img": {
+      height: "100%",
+      width: "100%",
+      borderRadius: "10px 0px 0px 10px",
+    },
+  },
 }));
 
 export const SongTile = props => {
   const { details } = props;
+  const history = useHistory();
   const { songsState, songsDispatch } = useSongs();
   const classes = useStyles();
 
@@ -71,17 +94,44 @@ export const SongTile = props => {
     }
     // if(songsState?.currentList.)
   };
+
+  const handleTileClick = details => {
+    history.push(`/song/${details._id}`);
+  };
   return (
-    <div className={classes.root}>
-      <div className="imgContainer">
-        <img src={details.image} alt={details.title} className="img" />
-      </div>
-      <div className="innerGrid">
-        <span className="title">{details.title}</span>
-        <div className="player" onClick={() => handlePlayClick(details)}>
-          <PlayArrowIcon />
+    <div>
+      {props?.horizontal ? (
+        <div className={classes.horz_root}>
+          <div
+            className="horz_imgContainer"
+            onClick={() => handleTileClick(details)}
+          >
+            <img src={details.image} alt={details.title} className="img" />
+          </div>
+          <div>
+            <span className="title" onClick={() => handleTileClick(details)}>
+              {details.title}
+            </span>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className={classes.root}>
+          <div
+            className="imgContainer"
+            onClick={() => handleTileClick(details)}
+          >
+            <img src={details.image} alt={details.title} className="img" />
+          </div>
+          <div className="innerGrid">
+            <span className="title" onClick={() => handleTileClick(details)}>
+              {details.title}
+            </span>
+            <div className="player" onClick={() => handlePlayClick(details)}>
+              <PlayArrowIcon />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -7,8 +7,15 @@ const songsReducer = (state, action) => {
     case "SET_SONGS":
       return { ...state, songs: action?.payload };
 
+    case "SET_RECENT_SEARCH":
+      return { ...state, recentSearch: action?.payload };
+
     case "SET_CURRENT_PLAYLIST": {
-      return { ...state, currentList: action?.payload };
+      return {
+        ...state,
+        currentList: action?.payload,
+        currentSong: action?.payload[0],
+      };
     }
     case "UPDATE_PLATLISTS": {
       return { ...state, playlists: action?.payload };
@@ -17,6 +24,19 @@ const songsReducer = (state, action) => {
     case "SET_CURRENT_SONG": {
       return { ...state, currentSong: action?.payload };
     }
+    case "SET_CURRENT_COLOR": {
+      return { ...state, currentColor: action?.payload };
+    }
+    case "ADD_LIKED_SONG":
+      return { ...state, likedSongs: action?.payload };
+
+    case "REMOVE_LIKED_SONG":
+      return {
+        ...state,
+        likedSongs: state.likedSongs.filter(
+          song => song._id !== action.payload
+        ),
+      };
     default:
       return state;
   }
@@ -26,6 +46,8 @@ const initalState = {
   likedSongs: [],
   playlists: [],
   currentList: [],
+  recentSearch: [],
+  currentColor: "",
 };
 
 export const SongsProvider = ({ children }) => {

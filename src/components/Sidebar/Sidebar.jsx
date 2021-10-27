@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { List, Typography, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import ArchiveIcon from "@material-ui/icons/Archive";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 import SearchOutlinedIcon from "@material-ui/icons/SearchOutlined";
+import AddBoxRoundedIcon from "@material-ui/icons/AddBoxRounded";
 import SortOutlinedIcon from "@material-ui/icons/SortOutlined";
+import LoyaltyRoundedIcon from "@material-ui/icons/LoyaltyRounded";
 import logo from "../../logo.png";
 
 import WbIncandescentOutlinedIcon from "@material-ui/icons/WbIncandescentOutlined";
 import { useLogin, useSongs } from "../../context";
 import { setStorage } from "../../utils/Theme/utilities.js/storageUtil";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
+import { getAllPlaylist } from "../../apis/songServices.js";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -115,6 +118,14 @@ export default function Sidebar() {
       label: "Your Library",
       icon: <SortOutlinedIcon style={{ transform: `rotate(272deg)` }} />,
     },
+    {
+      label: "Create Playlist",
+      icon: <AddBoxRoundedIcon />,
+    },
+    {
+      label: "Liked Songs",
+      icon: <LoyaltyRoundedIcon />,
+    },
   ]);
 
   const handleSidebarClick = key => {
@@ -124,32 +135,20 @@ export default function Sidebar() {
       history.push("/search");
     } else if (key === "Your Library") {
       history.push("/lib");
+    } else if (key === "Create Playlist") {
+      history.push("/createPlay");
+    } else if (key === "Liked Songs") {
+      history.push("/liked");
+    } else {
+      history.push(`/playlist/${key._id}`);
     }
-    // if (key === "Archive") {
-    //   getAllNotes({ isArchieved: true })
-    //     .then(function (res) {
-    //       notesDispatch({ type: "GET_NOTES", payload: res.data.data });
-    //     })
-    //     .catch(err => {});
-    // } else if (key === "Trash") {
-    //   getTrashNotes().then(function (res) {
-    //     notesDispatch({ type: "GET_NOTES", payload: res.data.data });
-    //   });
-    // } else {
-    //   getAllNotes()
-    //     .then(function (res) {
-    //       notesDispatch({ type: "GET_NOTES", payload: res.data.data });
-    //     })
-    //     .catch(err => {});
-    // }
-    // let choice = {
-    //   theme: userState?.theme,
-    //   view: userState?.view,
-    //   sidebar: key ? key : userState?.sidebar,
-    // };
-    // setStorage("choice", choice);
-    // userDispatch({ type: "SETCHOICE", payload: choice });
   };
+
+  useEffect(() => {
+    getAllPlaylist().then(res => {
+      songsDispatch({ type: "UPDATE_PLATLISTS", payload: res.data.data });
+    });
+  }, []);
   return (
     <div className={classes.root}>
       <span
@@ -179,6 +178,33 @@ export default function Sidebar() {
             <span className={classes.drawerLabelCss}>{anchor.label}</span>
           </List>
         ))}
+
+      <div
+        style={{
+          borderTop: "1px solid lightgray",
+          margin: "0px 8px",
+          overflowY: "auto",
+          maxHeight: "220px",
+        }}
+      >
+        {songsState?.playlists?.length > 0 &&
+          songsState?.playlists.map((anchor, index) => (
+            <List
+              className={
+                // anchor.label === userState?.sidebar
+                //   ? classes.drawerListItemCss_Active
+                //   :
+                classes.drawerListItemCss
+              }
+              key={index}
+              onClick={() => handleSidebarClick(anchor)}
+            >
+              {" "}
+              <span className={classes.drawerIconCss}></span>
+              <span className={classes.drawerLabelCss}>{anchor.name}</span>
+            </List>
+          ))}
+      </div>
     </div>
   );
 }

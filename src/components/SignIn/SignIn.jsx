@@ -1,6 +1,6 @@
 import { Box, Button, Checkbox, Grid } from "@material-ui/core";
 import { useState } from "react";
-import { useHistory } from "react-router";
+import { useHistory } from "react-router-dom";
 import logo from "../../logo.png";
 import { makeStyles } from "@material-ui/core/styles";
 import { OutLinedInput } from "../Common/TextInputs";

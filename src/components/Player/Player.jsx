@@ -8,6 +8,8 @@ import FilledFavoriteIcon from "@material-ui/icons/Favorite";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import { useSongs } from "../../context";
+import { addToLikedSongs, unlikeSong } from "../../apis/songServices.js";
+import { isPresent } from "../../utils/utils";
 
 const useStyles = makeStyles(theme => ({
   playerContainer: {
@@ -71,7 +73,7 @@ export const Player = () => {
   const classes = useStyles();
   const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
   const { songsState, songsDispatch } = useSongs();
-  console.log(songsState?.currentSong);
+
   const handleClickPrevious = () => {
     setCurrentMusicIndex(prevState => {
       return prevState === 0
@@ -93,6 +95,29 @@ export const Player = () => {
       payload: songsState?.currentList[currentMusicIndex],
     });
   };
+
+  const handleLikeClick = () => {
+    addToLikedSongs({ _id: songsState?.currentSong?._id })
+      .then(res => {
+        songsDispatch({
+          type: "ADD_LIKED_SONG",
+          payload: res.data.data.songs,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+  const handleUnlikeClick = () => {
+    unlikeSong({ _id: songsState?.currentSong?._id })
+      .then(res => {
+        songsDispatch({
+          type: "REMOVE_LIKED_SONG",
+          payload: songsState?.currentSong?._id, // res.data.data,
+        });
+      })
+      .catch(err => {});
+  };
   return (
     <div className={classes.root}>
       <div className="player">
@@ -102,11 +127,17 @@ export const Player = () => {
             style={{ height: "100%" }}
           />
           <span className="title">{songsState?.currentSong?.title}</span>
-          <span style={{ cursor: "pointer" }} onClick={handleLikeClick}>
-            {true ? (
-              <FilledFavoriteIcon htmlColor="#1db954" />
+          <span style={{ cursor: "pointer" }}>
+            {!isPresent(
+              songsState?.likedSongs,
+              songsState?.currentSong?._id
+            ) ? (
+              <FavoriteBorderIcon onClick={handleLikeClick} />
             ) : (
-              <FavoriteBorderIcon />
+              <FilledFavoriteIcon
+                htmlColor="#1db954"
+                onClick={handleUnlikeClick}
+              />
             )}
           </span>
         </div>

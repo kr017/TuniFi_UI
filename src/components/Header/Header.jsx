@@ -1,27 +1,17 @@
-import {
-  AppBar,
-  Avatar,
-  IconButton,
-  InputBase,
-  Popover,
-  Toolbar,
-  Typography,
-} from "@material-ui/core";
+import { IconButton, InputBase, Popover, Toolbar } from "@material-ui/core";
 import { alpha, makeStyles } from "@material-ui/core/styles";
 import WbSunnySharpIcon from "@material-ui/icons/WbSunnySharp";
 import WbSunnyOutlinedIcon from "@material-ui/icons/WbSunnyOutlined";
 import SearchIcon from "@material-ui/icons/Search";
-import ListViewIcon from "@material-ui/icons/ViewAgendaOutlined";
-import GridViewIcon from "@material-ui/icons/ViewQuiltOutlined";
 import { useState } from "react";
 import UserInfoMenu from "../Dashboard/UserInfoMenu";
 import { setStorage } from "../../utils/Theme/utilities.js/storageUtil";
 import { useLogin, useSongs } from "../../context";
-// import { getAllNotes } from "../../apis/noteServices";
 import PersonOutlineOutlinedIcon from "@material-ui/icons/PersonOutlineOutlined";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import { useRouteMatch } from "react-router";
+import { useRouteMatch } from "react-router-dom";
+import { getAllSongs } from "../../apis/songServices.js";
 const useStyles = makeStyles(theme => ({
   root: {
     padding: 0,
@@ -70,15 +60,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: "center",
     color: theme.palette.secondary.dark,
   },
-  toggleViewCss: {
-    // display: "none",
-    [theme.breakpoints.down("xs")]: {
-      display: "none",
-    },
-  },
-  viewIconCss: {
-    color: theme.palette.secondary.dark,
-  },
+
   profileContaiiner: {
     // width: "150px",
     borderRadius: "12px",
@@ -98,12 +80,11 @@ export function Header() {
   const [openMenu, setOpenMenu] = useState(false);
   const { userState, userDispatch } = useLogin();
   const showSearch = useRouteMatch("/search");
-  const { songsDispatch } = useSongs();
+  const { songsState, songsDispatch } = useSongs();
 
   function handleUserChoice(key) {
     let choice = {
       theme: userState?.theme,
-      view: userState?.view,
       sidebar: userState?.sidebar,
     };
 
@@ -132,16 +113,17 @@ export function Header() {
 
   const handleSearch = e => {
     let search = e.target.value;
-    let isArchieved = userState?.sidebar === "Archive" ? true : false;
-
-    // getAllNotes({ search: search, isArchieved: isArchieved })
-    //   .then(function (res) {
-    //     notesDispatch({ type: "GET_NOTES", payload: res.data.data });
-    //   })
-    //   .catch(err => {});
+    if (search !== "") {
+      getAllSongs({ title: search }).then(res => {
+        songsDispatch({ type: "SET_RECENT_SEARCH", payload: res.data.data });
+      });
+    }
   };
   return (
-    <div className={classes.root}>
+    <div
+      className={classes.root}
+      style={{ backgroundColor: `${songsState.currentColor}` }}
+    >
       {/* <AppBar position="fixed" className={classes.appBarCss}> */}
       <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
         <span>
@@ -193,7 +175,7 @@ export function Header() {
             style={{ marginRight: "4px" }}
           >
             {userState.theme === "dark" ? (
-              <WbSunnySharpIcon style={{ color: "#ecd215" }} />
+              <WbSunnySharpIcon style={{ color: "#fff" }} />
             ) : (
               <WbSunnyOutlinedIcon style={{ color: "#424040" }} />
             )}

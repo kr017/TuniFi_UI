@@ -1,46 +1,52 @@
-import { CssBaseline, Grid } from "@material-ui/core";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
-import { themes } from "../../utils/Theme/Theme";
-import { Header } from "../Header/Header";
-import Sidebar from "../Sidebar/Sidebar";
-import { getStorage } from "../../utils/Theme/utilities.js/storageUtil";
-import { Player } from "../Player/Player";
 import { useEffect } from "react";
-import { getAllSongs } from "../../apis/noteServices";
+
+import { makeStyles } from "@material-ui/core/styles";
+import { Grid } from "@material-ui/core";
+import { SongTile } from "../Song/SongTile";
+
+import {
+  getAllPlaylist,
+  getAllSongs,
+  getLikedSongs,
+} from "../../apis/songServices.js";
 import { useSongs } from "../../context";
-import { DashboardContainer } from "./DashboardContainer";
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    overflowY: "auto",
+    overflowX: "hidden",
+    height: "80vh",
+  },
+}));
 export function Dashboard() {
-  const userChoice = getStorage("choice");
-  const { songsDispatch } = useSongs();
-
-  const preferredTheme = userChoice?.theme ? userChoice?.theme : "light"; //"light"; //user.theme;
-  const theme = createTheme(themes[preferredTheme]);
-
+  const classes = useStyles();
+  const { songsState, songsDispatch } = useSongs();
   useEffect(() => {
     getAllSongs().then(res => {
       songsDispatch({ type: "SET_SONGS", payload: res.data.data });
       songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: res.data.data });
+      getLikedSongs().then(response => {
+        songsDispatch({
+          type: "ADD_LIKED_SONG",
+          payload: response?.data?.data?.songs,
+        });
+      });
     });
   }, []);
   return (
-    <div>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-
-        <Grid container style={{ height: "100vh", overflow: "hidden" }}>
-          <Grid item xs={2}>
-            <Sidebar />
+    <div className={classes.root}>
+      <Grid container style={{ margin: "10px 4vw" }}>
+        {songsState?.songs?.map(song => (
+          <Grid
+            item
+            xs={5}
+            key={song._id}
+            style={{ marginBottom: "10px", marginRight: "12px" }}
+          >
+            <SongTile details={song} />
           </Grid>
-          <Grid item xs={10} style={{ margin: "0 auto" }}>
-            <Header />
-            <DashboardContainer />
-          </Grid>
-          <Grid style={{ width: "100%", position: "absolute", bottom: 0 }}>
-            <Player />
-          </Grid>
-        </Grid>
-      </ThemeProvider>
+        ))}
+      </Grid>
     </div>
   );
 }

@@ -28,11 +28,7 @@ const userReducer = (state, action) => {
 
       return {
         token: token.token,
-        iname: token?.name,
-        email: token?.email,
         theme: action.payload?.theme ? action.payload?.theme : "light",
-        view: action.payload?.view ? action.payload?.view : "grid",
-        sidebar: action.payload?.sidebar ? action.payload?.sidebar : "Notes",
       };
 
     default:

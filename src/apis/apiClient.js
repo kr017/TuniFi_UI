@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosClient = axios.create({
   baseURL: `http://13.126.37.93:5501/`,
-  // `http://localhost:5500/`,
+  // `http://localhost:5501/`,
   // `https://gkeepback.herokuapp.com/`,
   headers: {
     Accept: "application/json",
@@ -14,7 +14,7 @@ axiosClient.interceptors.request.use(
   function (request) {
     let token = JSON.parse(localStorage.getItem("hint"));
     if (request.url.includes("api")) {
-      request.headers.authorization = token.token;
+      request.headers.authorization = token?.token;
     }
 
     return request;
