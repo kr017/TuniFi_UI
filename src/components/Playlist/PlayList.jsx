@@ -7,6 +7,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { addToPlaylist } from "../../apis/songServices.js";
 
 import { useSongs } from "../../context";
+import { getToast } from "../../utils/utils.js";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,20 +31,15 @@ export default function PlayList(props) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleAddToPlaylist = id => {
-    console.log(props.song?._id);
     addToPlaylist({
       song_id: props.song?._id,
       playlist_id: id,
     })
       .then(res => {
-        toast.error("Something went wrong please try again", {
-          position: "top-center",
-        });
+        if (res) getToast("SUCCESS", "Song Added!");
       })
       .catch(err => {
-        toast.error("Something went wrong please try again", {
-          position: "top-center",
-        });
+        getToast("SUCCESS", "Something went wrong please try again");
       });
   };
 

@@ -16,6 +16,7 @@ const useStyles = makeStyles(theme => ({
     overflowY: "auto",
     overflowX: "hidden",
     height: "80vh",
+    padding: "4vh 4vh 8vh 4vh",
   },
 }));
 export function Dashboard() {
@@ -24,7 +25,7 @@ export function Dashboard() {
   useEffect(() => {
     getAllSongs().then(res => {
       songsDispatch({ type: "SET_SONGS", payload: res.data.data });
-      songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: res.data.data });
+      // songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: res.data.data });
       getLikedSongs().then(response => {
         songsDispatch({
           type: "ADD_LIKED_SONG",

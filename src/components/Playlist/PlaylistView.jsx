@@ -4,7 +4,6 @@ import { useHistory, useParams } from "react-router-dom";
 import { Grid, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
@@ -18,14 +17,15 @@ import {
 import { useSongs } from "../../context/songsContext.js";
 import { getToast } from "../../utils/utils.js";
 import { SongTile } from "../Song/SongTile.jsx";
+import Noplay from "../../noplay.png";
 
 const useStyles = makeStyles(theme => ({
   root: {
     overflowY: "auto",
     overflowX: "hidden",
     height: "80vh",
-    paddingLeft: "4vw",
-    paddingTop: "4vh",
+    padding: "4vh 4vh 8vh 4vh",
+    // marginBottom: "20vh",
   },
   upperSection: {
     alignItems: "flex-end",
@@ -59,6 +59,7 @@ const useStyles = makeStyles(theme => ({
   },
   middleSection: {
     alignItems: "center",
+    margin: "4px 0px",
   },
   player: {
     // position: "absolute",
@@ -74,6 +75,16 @@ const useStyles = makeStyles(theme => ({
     "&:hover": {
       transform: `scale(1.1)`,
     },
+  },
+  inactivePlayer: {
+    opacity: 0.6,
+    height: "60px",
+    width: "60px",
+    borderRadius: "50%",
+    backgroundColor: theme.palette.spotify,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "Center",
   },
 }));
 export default function PlaylistView(props) {
@@ -127,29 +138,21 @@ export default function PlaylistView(props) {
 
         songsDispatch({ type: "UPDATE_PLATLISTS", payload: arr });
         getToast("SUCCESS", "Playlist deleted!!!");
+        history.push("/");
       })
-      .catch(err => {});
+      .catch(err => {
+        getToast("ERROR", "Something went wrong please try again");
+      });
   };
-
-  const handleRemoveSong = songId => {
+  const updatePlaylist = songId => {
     removeFromPlaylist({ playlist_id: selectedPlaylist.id, song_id: songId })
       .then(res => {
-        let index = songsState?.playlists?.findIndex(
-          play => play._id === selectedPlaylist.id
-        );
-        songsState.playlists[index].songs = songsState.playlists[
-          index
-        ].songs.filter(song => song._id !== songId);
+        setDetails(res.data.data);
 
-        songsDispatch({
-          type: "UPDATE_PLATLISTS",
-          payload: songsState.playlists,
-        });
         getToast("SUCCESS", "Song removed!!!");
       })
       .catch(err => {});
   };
-
   return (
     <div className={classes.root}>
       <Grid container spacing={3} className={classes.upperSection}>
@@ -157,7 +160,7 @@ export default function PlaylistView(props) {
           <div className={classes.bannerImgContainer}>
             <img
               className={classes.bannerImg}
-              src={details?.songs[0]?.image}
+              src={details?.songs[0]?.image ? details?.songs[0]?.image : Noplay}
               alt="playlist_img"
             />
           </div>
@@ -177,8 +180,14 @@ export default function PlaylistView(props) {
       <Grid container className={classes.middleSection} spacing={3}>
         <Grid item>
           <div
-            className={classes.player}
-            onClick={() => handlePlayClick(details)}
+            className={
+              details?.songs?.length > 0
+                ? classes.player
+                : classes.inactivePlayer
+            }
+            onClick={() =>
+              details?.songs?.length > 0 ? handlePlayClick(details) : null
+            }
           >
             <PlayArrowIcon fontSize="large" />
           </div>
@@ -195,12 +204,12 @@ export default function PlaylistView(props) {
       </Grid>
 
       {details?.songs?.map(song => (
-        <div key={song._id}>
-          <SongTile horizontal={true} details={song} />
-
-          <span onClick={() => handleRemoveSong(song._id)}>
-            <RemoveCircleOutlineOutlinedIcon />
-          </span>
+        <div key={song._id} style={{ display: "inline-flex" }}>
+          <SongTile
+            horizontal={true}
+            details={song}
+            updatePlaylist={updatePlaylist}
+          />
         </div>
       ))}
     </div>

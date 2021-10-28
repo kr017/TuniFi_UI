@@ -16,6 +16,9 @@ const useStyles = makeStyles(theme => ({
   empty: {
     display: "flex",
     justifyContent: "center",
+    fontSize: "22px",
+    marginTop: "2vh",
+    textAlign: "center",
   },
 }));
 export default function Search() {
@@ -26,10 +29,10 @@ export default function Search() {
   useEffect(() => {}, [songsState?.recentSearch]);
   return (
     <div className={classes.root}>
-      {songsState?.recentSearch?.length > 0 ? (
+      {songsState?.recentSearch?.searchResult?.length > 0 ? (
         <div>
           Recent Search
-          {songsState?.recentSearch?.map(song => (
+          {songsState?.recentSearch?.searchResult?.map(song => (
             <Grid
               item
               xs={5}
@@ -42,7 +45,18 @@ export default function Search() {
         </div>
       ) : (
         <div className={classes.empty}>
-          Please type in search box and hit enter button.
+          {songsState?.recentSearch?.searchText ? (
+            <div>
+              No results found for "{songsState?.recentSearch?.searchText}"
+              Please type in search box and hit enter button.
+              <div style={{ fontSize: "18px" }}>
+                Please make sure your words are spelled correctly or use less or
+                different keywords.
+              </div>
+            </div>
+          ) : (
+            <div>Please type in search box and hit enter button.</div>
+          )}
         </div>
       )}
     </div>

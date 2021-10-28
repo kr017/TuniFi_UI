@@ -26,6 +26,14 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 400,
     textTransform: "capitalize",
   },
+  imgContainer: {
+    height: "200px",
+    width: "200px",
+  },
+  img: {
+    height: "100%",
+    width: "100%",
+  },
 }));
 export default function SongDetails() {
   const classes = useStyles();
@@ -63,21 +71,23 @@ export default function SongDetails() {
   return (
     <div
       className={classes.root}
-      style={{
-        backgroundImage:
-          //  "Red",
-          `linear-gradient(357deg, rgb(179 167 167 / 18%) 0%, ${
-            song?.color ? song?.color : ""
-          } 50%)`,
-      }}
+      style={
+        {
+          // backgroundImage:
+          //   //  "Red",
+          //   `linear-gradient(357deg, rgb(179 167 167 / 18%) 0%, ${
+          //     song?.color ? song?.color : ""
+          //   } 50%)`,
+        }
+      }
     >
       <Grid style={{ marginBottom: "10px", marginRight: "12px" }} container>
         <Grid item xs={12} sm={3}>
           <div
-            className="imgContainer"
+            className={classes.imgContainer}
             // onClick={() => handleTileClick(details)}
           >
-            <img src={song?.image} alt={song?.title} className="img" />
+            <img src={song?.image} alt={song?.title} className={classes.img} />
           </div>
         </Grid>
         <Grid item xs={12} sm={9}>

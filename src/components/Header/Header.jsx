@@ -77,7 +77,6 @@ export function Header() {
   const classes = useStyles();
   const [openProfile, setOpenProfile] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [openMenu, setOpenMenu] = useState(false);
   const { userState, userDispatch } = useLogin();
   const showSearch = useRouteMatch("/search");
   const { songsState, songsDispatch } = useSongs();
@@ -95,13 +94,7 @@ export function Header() {
         sidebar: userState?.sidebar,
       };
     }
-    if (key === "view") {
-      choice = {
-        view: userState?.view === "grid" ? "list" : "grid",
-        theme: userState?.theme,
-        sidebar: userState?.sidebar,
-      };
-    }
+
     setStorage("choice", choice);
     userDispatch({ type: "SETCHOICE", payload: choice });
   }
@@ -115,7 +108,10 @@ export function Header() {
     let search = e.target.value;
     if (search !== "") {
       getAllSongs({ title: search }).then(res => {
-        songsDispatch({ type: "SET_RECENT_SEARCH", payload: res.data.data });
+        songsDispatch({
+          type: "SET_RECENT_SEARCH",
+          payload: { searchResult: res.data.data, searchText: search },
+        });
       });
     }
   };

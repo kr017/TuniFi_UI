@@ -2,8 +2,11 @@ import { useHistory, useParams } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import RemoveCircleOutlineOutlinedIcon from "@material-ui/icons/RemoveCircleOutlineOutlined";
+
 import { useSongs } from "../../context";
-import { isPresent } from "../../utils/utils";
+import { getToast, isPresent } from "../../utils/utils";
+import { removeFromPlaylist } from "../../apis/songServices.js";
 const useStyles = makeStyles(theme => ({
   root: {
     // padding: "12px",
@@ -58,10 +61,14 @@ const useStyles = makeStyles(theme => ({
     position: "relative",
     borderRadius: "10px",
     display: "flex",
-    backgroundColor: theme.palette.hover, //"#ffffff1a",
+    // backgroundColor: theme.palette.hover, //"#ffffff1a",
     cursor: "pointer",
     width: "80vw",
-
+    padding: "4px",
+    alignItems: "center",
+    "& .horz_content": {
+      padding: "0px 8px",
+    },
     "& .horz_imgContainer": {
       height: "50px",
       width: "50px",
@@ -70,7 +77,12 @@ const useStyles = makeStyles(theme => ({
     "& .img": {
       height: "100%",
       width: "100%",
-      borderRadius: "10px 0px 0px 10px",
+      // borderRadius: "10px 0px 0px 10px",
+    },
+    "& .horz_title": {
+      marginLeft: "12px",
+      fontSize: "18px",
+      textTransform: "capitalize",
     },
   },
 }));
@@ -78,6 +90,8 @@ const useStyles = makeStyles(theme => ({
 export const SongTile = props => {
   const { details } = props;
   const history = useHistory();
+  const selectedPlaylist = useParams();
+
   const { songsState, songsDispatch } = useSongs();
   const classes = useStyles();
 
@@ -98,18 +112,50 @@ export const SongTile = props => {
   const handleTileClick = details => {
     history.push(`/song/${details._id}`);
   };
+
+  // const handleRemoveSong = songId => {
+  //   removeFromPlaylist({ playlist_id: selectedPlaylist.id, song_id: songId })
+  //     .then(res => {
+  //       let index = songsState?.playlists?.findIndex(
+  //         play => play._id === selectedPlaylist.id
+  //       );
+  //       songsState.playlists[index].songs = songsState.playlists[
+  //         index
+  //       ].songs.filter(song => song._id !== songId);
+
+  //       songsDispatch({
+  //         type: "UPDATE_PLATLISTS",
+  //         payload: songsState.playlists,
+  //       });
+  //       getToast("SUCCESS", "Song removed!!!");
+  //     })
+  //     .catch(err => {});
+  // };
+  const handleRemoveClick = id => {
+    props.updatePlaylist(id);
+  };
   return (
     <div>
       {props?.horizontal ? (
         <div className={classes.horz_root}>
-          <div
-            className="horz_imgContainer"
-            onClick={() => handleTileClick(details)}
-          >
-            <img src={details.image} alt={details.title} className="img" />
+          <div className="horz_content">
+            <span onClick={() => handleRemoveClick(details._id)}>
+              <RemoveCircleOutlineOutlinedIcon />
+            </span>
           </div>
-          <div>
-            <span className="title" onClick={() => handleTileClick(details)}>
+          <div className="horz_content">
+            <div
+              className="horz_imgContainer"
+              onClick={() => handleTileClick(details)}
+            >
+              <img src={details.image} alt={details.title} className="img" />
+            </div>
+          </div>
+          <div className="horz_content">
+            <span
+              className="horz_title"
+              onClick={() => handleTileClick(details)}
+            >
               {details.title}
             </span>
           </div>

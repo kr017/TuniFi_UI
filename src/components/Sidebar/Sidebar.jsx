@@ -187,23 +187,27 @@ export default function Sidebar() {
           maxHeight: "220px",
         }}
       >
-        {songsState?.playlists?.length > 0 &&
-          songsState?.playlists.map((anchor, index) => (
-            <List
-              className={
-                // anchor.label === userState?.sidebar
-                //   ? classes.drawerListItemCss_Active
-                //   :
-                classes.drawerListItemCss
-              }
-              key={index}
-              onClick={() => handleSidebarClick(anchor)}
-            >
-              {" "}
-              <span className={classes.drawerIconCss}></span>
-              <span className={classes.drawerLabelCss}>{anchor.name}</span>
-            </List>
-          ))}
+        {songsState?.playlists?.length > 0 && (
+          <div>
+            Playlists
+            {songsState?.playlists.map((anchor, index) => (
+              <List
+                className={
+                  // anchor.label === userState?.sidebar
+                  //   ? classes.drawerListItemCss_Active
+                  //   :
+                  classes.drawerListItemCss
+                }
+                key={index}
+                onClick={() => handleSidebarClick(anchor)}
+              >
+                {" "}
+                <span className={classes.drawerIconCss}></span>
+                <span className={classes.drawerLabelCss}>{anchor.name}</span>
+              </List>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

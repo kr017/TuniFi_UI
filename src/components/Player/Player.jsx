@@ -75,25 +75,24 @@ export const Player = () => {
   const { songsState, songsDispatch } = useSongs();
 
   const handleClickPrevious = () => {
-    setCurrentMusicIndex(prevState => {
-      return prevState === 0
-        ? songsState?.currentList.length - 1
-        : prevState - 1;
-    });
     songsDispatch({
       type: "SET_CURRENT_SONG",
-      payload: songsState?.currentList[currentMusicIndex],
+      payload: songsState?.currentList[currentMusicIndex - 1],
     });
+    setCurrentMusicIndex(prevState => prevState - 1);
   };
 
   const handleClickNext = () => {
-    setCurrentMusicIndex(prevState =>
-      prevState < songsState?.currentList.length - 1 ? prevState + 1 : 0
-    );
     songsDispatch({
       type: "SET_CURRENT_SONG",
-      payload: songsState?.currentList[currentMusicIndex],
+      payload: songsState?.currentList[currentMusicIndex + 1],
     });
+    setCurrentMusicIndex(
+      prevState =>
+        // prevState < songsState?.currentList.length - 1 ?
+        prevState + 1
+      //  : 0
+    );
   };
 
   const handleLikeClick = () => {
@@ -149,7 +148,7 @@ export const Player = () => {
           onClickPrevious={handleClickPrevious}
           onClickNext={handleClickNext}
           loop={false}
-          autoPlay={false}
+          autoPlay={true}
           muted={true}
           onEnded={handleClickNext}
           customAdditionalControls={[]}

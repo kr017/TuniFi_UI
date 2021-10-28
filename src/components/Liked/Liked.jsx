@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
     overflowY: "auto",
     overflowX: "hidden",
     height: "80vh",
+    padding: "4vh 4vh 8vh 4vh",
   },
 }));
 export function Liked() {
