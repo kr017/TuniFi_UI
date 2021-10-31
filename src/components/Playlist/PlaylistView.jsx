@@ -103,6 +103,11 @@ export default function PlaylistView(props) {
             type: "SET_CURRENT_COLOR",
             payload: res?.data?.data[0]?.color,
           });
+
+          // songsDispatch({
+          //   type: "SET_CURRENT_PLAYLIST",
+          //   payload: res.data.data,
+          // });
         }
       });
     },

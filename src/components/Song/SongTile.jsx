@@ -84,6 +84,28 @@ const useStyles = makeStyles(theme => ({
       fontSize: "18px",
       textTransform: "capitalize",
     },
+    "& .player": {
+      position: "absolute",
+      right: "2vw",
+      //   opacity: 0,
+      height: "40px",
+      width: "40px",
+      borderRadius: "50%",
+      backgroundColor: theme.palette.spotify,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "Center",
+      "&:hover": {
+        transform: `scale(1.1)`,
+      },
+    },
+    "&:hover .player": {
+      opacity: 1,
+    },
+    "& .removeCss": {
+      position: "absolute",
+      right: "2vw",
+    },
   },
 }));
 
@@ -95,17 +117,40 @@ export const SongTile = props => {
   const { songsState, songsDispatch } = useSongs();
   const classes = useStyles();
 
+  const handlePlaylistSongClick = details => {
+    // songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: [] });
+    let index = songsState?.currentList?.findIndex(
+      ele => ele._id === songsState?.currentSong?._id
+    );
+    if (index === -1) {
+      songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: [] });
+    }
+    songsDispatch({
+      type: "SET_CURRENT_SONG",
+      payload: details,
+    });
+  };
+
   const handlePlayClick = details => {
-    if (!isPresent(songsState?.currentList, details._id)) {
-      let arr = [];
-      arr.push(details);
-      songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: arr });
-    } else {
+    if (props?.notPlaylist) {
+      songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: [] });
       songsDispatch({
         type: "SET_CURRENT_SONG",
         payload: details,
       });
+    } else {
+      if (!isPresent(songsState?.currentList, details._id)) {
+        let arr = [];
+        arr.push(details);
+        songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: arr });
+      } else {
+        songsDispatch({
+          type: "SET_CURRENT_SONG",
+          payload: details,
+        });
+      }
     }
+
     // if(songsState?.currentList.)
   };
 
@@ -113,24 +158,6 @@ export const SongTile = props => {
     history.push(`/song/${details._id}`);
   };
 
-  // const handleRemoveSong = songId => {
-  //   removeFromPlaylist({ playlist_id: selectedPlaylist.id, song_id: songId })
-  //     .then(res => {
-  //       let index = songsState?.playlists?.findIndex(
-  //         play => play._id === selectedPlaylist.id
-  //       );
-  //       songsState.playlists[index].songs = songsState.playlists[
-  //         index
-  //       ].songs.filter(song => song._id !== songId);
-
-  //       songsDispatch({
-  //         type: "UPDATE_PLATLISTS",
-  //         payload: songsState.playlists,
-  //       });
-  //       getToast("SUCCESS", "Song removed!!!");
-  //     })
-  //     .catch(err => {});
-  // };
   const handleRemoveClick = id => {
     props.updatePlaylist(id);
   };
@@ -139,9 +166,9 @@ export const SongTile = props => {
       {props?.horizontal ? (
         <div className={classes.horz_root}>
           <div className="horz_content">
-            <span onClick={() => handleRemoveClick(details._id)}>
-              <RemoveCircleOutlineOutlinedIcon />
-            </span>
+            <div onClick={() => handlePlaylistSongClick(details)}>
+              <PlayArrowIcon />
+            </div>
           </div>
           <div className="horz_content">
             <div
@@ -157,6 +184,14 @@ export const SongTile = props => {
               onClick={() => handleTileClick(details)}
             >
               {details.title}
+            </span>
+          </div>{" "}
+          <div>
+            <span
+              onClick={() => handleRemoveClick(details._id)}
+              className="removeCss"
+            >
+              <RemoveCircleOutlineOutlinedIcon />
             </span>
           </div>
         </div>

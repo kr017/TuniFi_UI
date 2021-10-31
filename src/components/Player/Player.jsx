@@ -3,13 +3,15 @@ import { useState } from "react";
 
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import FilledFavoriteIcon from "@material-ui/icons/Favorite";
+import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
+import SkipNextIcon from "@material-ui/icons/SkipNext";
 
-// import ReactPlayer from "react-player";
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import { useSongs } from "../../context";
 import { addToLikedSongs, unlikeSong } from "../../apis/songServices.js";
 import { isPresent } from "../../utils/utils";
+import { useEffect } from "react";
 
 const useStyles = makeStyles(theme => ({
   playerContainer: {
@@ -67,12 +69,30 @@ const useStyles = makeStyles(theme => ({
       color: theme.palette.primary.contrastText,
     },
   },
+  inactive: {
+    cursor: "not-allowed",
+    opacity: 0.6,
+  },
+  active: {
+    cursor: "pointer",
+  },
 }));
 
 export const Player = () => {
   const classes = useStyles();
   const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
   const { songsState, songsDispatch } = useSongs();
+
+  useEffect(() => {
+    let index = songsState?.currentList?.findIndex(
+      ele => ele._id === songsState?.currentSong?._id
+    );
+    if (index) {
+      setCurrentMusicIndex(index);
+    } else {
+      setCurrentMusicIndex(0);
+    }
+  }, [songsState?.currentList, songsState?.currentSong]);
 
   const handleClickPrevious = () => {
     songsDispatch({
@@ -83,16 +103,20 @@ export const Player = () => {
   };
 
   const handleClickNext = () => {
-    songsDispatch({
-      type: "SET_CURRENT_SONG",
-      payload: songsState?.currentList[currentMusicIndex + 1],
-    });
-    setCurrentMusicIndex(
-      prevState =>
-        // prevState < songsState?.currentList.length - 1 ?
-        prevState + 1
-      //  : 0
-    );
+    if (songsState?.currentList?.length - 1 === currentMusicIndex) {
+      return;
+    } else {
+      songsDispatch({
+        type: "SET_CURRENT_SONG",
+        payload: songsState?.currentList[currentMusicIndex + 1],
+      });
+      setCurrentMusicIndex(
+        prevState =>
+          // prevState < songsState?.currentList.length - 1 ?
+          prevState + 1
+        //  : 0
+      );
+    }
   };
 
   const handleLikeClick = () => {
@@ -145,12 +169,51 @@ export const Player = () => {
           showSkipControls={true}
           showJumpControls={false}
           src={songsState?.currentSong?.src}
-          onClickPrevious={handleClickPrevious}
-          onClickNext={handleClickNext}
+          onClickPrevious={
+            songsState?.currentList?.length === 0 || currentMusicIndex === 0
+              ? null
+              : handleClickPrevious
+          }
+          onClickNext={
+            songsState?.currentList?.length === 0 ||
+            songsState?.currentList?.length - 1 === currentMusicIndex
+              ? null
+              : handleClickNext
+          }
           loop={false}
           autoPlay={true}
           muted={true}
           onEnded={handleClickNext}
+          customIcons={{
+            previous: (
+              <SkipPreviousIcon
+                fontSize="large"
+                className={
+                  songsState?.currentList?.length === 1
+                    ? classes.inactive
+                    : songsState?.currentList?.length === 0
+                    ? classes.inactive
+                    : currentMusicIndex === 0
+                    ? classes.inactive
+                    : classes.active
+                }
+              />
+            ),
+            next: (
+              <SkipNextIcon
+                fontSize="large"
+                className={
+                  songsState?.currentList?.length === 1
+                    ? classes.inactive
+                    : songsState?.currentList?.length === 0
+                    ? classes.inactive
+                    : songsState?.currentList?.length - 1 === currentMusicIndex
+                    ? classes.inactive
+                    : classes.active
+                }
+              />
+            ),
+          }}
           customAdditionalControls={[]}
         />
       </div>

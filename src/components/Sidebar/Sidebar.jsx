@@ -9,10 +9,7 @@ import AddBoxRoundedIcon from "@material-ui/icons/AddBoxRounded";
 import SortOutlinedIcon from "@material-ui/icons/SortOutlined";
 import LoyaltyRoundedIcon from "@material-ui/icons/LoyaltyRounded";
 import logo from "../../logo.png";
-
-import WbIncandescentOutlinedIcon from "@material-ui/icons/WbIncandescentOutlined";
 import { useLogin, useSongs } from "../../context";
-import { setStorage } from "../../utils/Theme/utilities.js/storageUtil";
 import { useHistory } from "react-router-dom";
 import { getAllPlaylist } from "../../apis/songServices.js";
 
@@ -44,24 +41,6 @@ const useStyles = makeStyles(theme => ({
     borderRadius: "10px",
     fontWeight: 600,
     opacity: 0.7,
-    "&:hover": {
-      opacity: 1,
-      //transparent,
-    },
-  },
-  drawerListItemCss_Active: {
-    height: "48px",
-    cursor: "pointer",
-    display: "inline-flex",
-    alignItems: "center",
-
-    minWidth: "90%",
-    marginLeft: "8px",
-    borderRadius: "10px",
-    fontWeight: 600,
-    opacity: 1,
-    backgroundColor: theme.palette.hover,
-    color: theme.palette.primary.dark,
   },
   drawerIconCss: {
     padding: "0 12px",
@@ -70,6 +49,11 @@ const useStyles = makeStyles(theme => ({
     overflow: "hidden",
     textOverflow: "hidden",
     whiteSpace: "nowrap",
+    textTransform: "capitalize",
+    "&:hover": {
+      transform: "scale(1.02)",
+      opacity: 1,
+    },
   },
   ListItemCss: {
     width: "48px",
@@ -189,19 +173,22 @@ export default function Sidebar() {
       >
         {songsState?.playlists?.length > 0 && (
           <div>
-            Playlists
+            <div
+              style={{
+                fontWeight: 500,
+                fontSize: "18px",
+                marginLeft: "12px",
+                marginTop: "4px",
+              }}
+            >
+              Playlists
+            </div>
             {songsState?.playlists.map((anchor, index) => (
               <List
-                className={
-                  // anchor.label === userState?.sidebar
-                  //   ? classes.drawerListItemCss_Active
-                  //   :
-                  classes.drawerListItemCss
-                }
+                className={classes.drawerListItemCss}
                 key={index}
                 onClick={() => handleSidebarClick(anchor)}
               >
-                {" "}
                 <span className={classes.drawerIconCss}></span>
                 <span className={classes.drawerLabelCss}>{anchor.name}</span>
               </List>

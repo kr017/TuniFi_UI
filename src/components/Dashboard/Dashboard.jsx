@@ -25,7 +25,13 @@ export function Dashboard() {
   useEffect(() => {
     getAllSongs().then(res => {
       songsDispatch({ type: "SET_SONGS", payload: res.data.data });
-      // songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: res.data.data });
+      if (!songsState?.currentSong) {
+        songsDispatch({
+          type: "SET_CURRENT_SONG",
+          payload: null,
+        });
+      }
+      // songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: [] });
       getLikedSongs().then(response => {
         songsDispatch({
           type: "ADD_LIKED_SONG",
@@ -44,7 +50,7 @@ export function Dashboard() {
             key={song._id}
             style={{ marginBottom: "10px", marginRight: "12px" }}
           >
-            <SongTile details={song} />
+            <SongTile details={song} notPlaylist={true} />
           </Grid>
         ))}
       </Grid>

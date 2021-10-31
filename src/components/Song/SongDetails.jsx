@@ -1,15 +1,20 @@
-import { Button, Grid, Popover } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
+
+import { Button, Grid, Popover } from "@material-ui/core";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+
+import { makeStyles } from "@material-ui/core/styles";
+
 import {
   addToPlaylist,
+  createPlaylist,
   getAllPlaylist,
   getSongDetails,
 } from "../../apis/songServices.js";
 
 import { useSongs } from "../../context";
+import { getToast } from "../../utils/utils.js";
 import UserInfoMenu from "../Dashboard/UserInfoMenu.jsx";
 import PlayList from "../Playlist/PlayList.jsx";
 const useStyles = makeStyles(theme => ({
@@ -55,19 +60,17 @@ export default function SongDetails() {
     });
   }, []);
 
-  const handleAddToPlaylist = () => {
-    addToPlaylist({
-      song_id: song._id,
-      playlist_id: "61762ede4a45a53198692e4e",
-    })
-      .then(res => {})
-      .catch(err => {});
-  };
-
   const togglePopover = e => {
     setAnchorEl(null);
   };
 
+  const handlePlayClick = song => {
+    songsDispatch({
+      type: "SET_CURRENT_SONG",
+      payload: song,
+    });
+    // songsDispatch({ type: "SET_CURRENT_PLAYLIST", payload: [] });
+  };
   return (
     <div
       className={classes.root}
@@ -108,6 +111,18 @@ export default function SongDetails() {
             >
               Add To playlist
             </Button>
+          </div>
+          <div>
+            <div
+              className={
+                song?.src !== null ? classes.player : classes.inactivePlayer
+              }
+              onClick={() =>
+                song?.src !== null ? handlePlayClick(song) : null
+              }
+            >
+              <PlayArrowIcon fontSize="large" />
+            </div>
           </div>
         </Grid>
       </Grid>
